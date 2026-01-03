@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html>
+<body>
+<h2>Student Portal</h2>
+<video id="video" autoplay></video>
+
+<script>
+const params = new URLSearchParams(window.location.search);
+const token = params.get("token");
+
+const ws = new WebSocket(`ws://localhost:8000/ws?token=${token}`);
+const video = document.getElementById("video");
+
+navigator.mediaDevices.getUserMedia({ video: true })
+.then(stream => video.srcObject = stream);
+
+const canvas = document.createElement("canvas");
+const ctx = canvas.getContext("2d");
+
+setInterval(() => {
+    canvas.width = video.videoWidth;
+    canvas.height = video.videoHeight;
+    ctx.drawImage(video, 0, 0);
+    ws.send(canvas.toDataURL("image/jpeg"));
+}, 500);
+</script>
+</body>
+</html>
